@@ -45,6 +45,8 @@
 #include <linux/fs.h>
 #include <linux/cpuset.h>
 
+#include <trace/events/memkill.h>
+
 #ifdef CONFIG_HIGHMEM
 #define _ZONE ZONE_HIGHMEM
 #else
