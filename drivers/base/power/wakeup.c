@@ -473,6 +473,11 @@ static void wakeup_source_activate(struct wakeup_source *ws)
 		wakeup_source_deactivate(ws);
 		return;
 	}
+	/*
+	 * active wakeup source should bring the system
+	 * out of PM_SUSPEND_FREEZE state
+	 */
+	freeze_wake();
 
 	ws->active = true;
 	ws->active_count++;
