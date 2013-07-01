@@ -363,6 +363,8 @@ CC		+= -DNDEBUG -marm -fivopts -g0 -fno-inline-functions -mvectorize-with-neon-q
 # CC		+= -fopenmp -ftree-parallelize-loops=4
 # based on linaro graphite optimizations
 CC		+= -fgraphite-identity -fgraphite -floop-block -floop-strip-mine -ftree-loop-distribution -ftree-loop-linear
+# Tarun93's Optimizations
+CC		+= -fgcse-las -fgcse-sm -fipa-pta -fomit-frame-pointer -frename-registers -fsection-anchors -ftracer -ftree-loop-im -ftree-loop-ivcanon -funsafe-loop-optimizations -funswitch-loops -fweb
 
 # Use the wrapper for the compiler.  This wrapper scans for new
 # warnings and causes the build to stop upon encountering them.
