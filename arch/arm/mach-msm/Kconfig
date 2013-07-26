@@ -529,6 +529,7 @@ config ARCH_MSM8226
 	select MSM_RPM_STATS_LOG
 	select ARCH_WANT_KMAP_ATOMIC_FLUSH
 	select ENABLE_VMALLOC_SAVINGS
+	select HAS_MACH_MEMUTILS
 
 config ARCH_MSMSAMARIUM
 	bool "MSMSAMARIUM"
@@ -3067,12 +3068,19 @@ config ALUCARD_HOTPLUG
 	help
 	  Alucard-hotplug cpu hotplug driver for ARM SOCs
 
+config HAS_MACH_MEMUTILS
+	default n
+	bool "Motorola MSM memcpy enhancements"
+	help
+	Faster memcpy performance for Krait
+
 config FORCE_FAST_CHARGE
 	bool "Force AC charge mode at will"
 	default y
 	help
 		A simple sysfs interface to force adapters that
 		are detected as USB to charge as AC.
+
 endif
 
 config KERNEL_TEXT_MPU_PROT
