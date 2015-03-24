@@ -65,7 +65,7 @@ static spinlock_t speedchange_cpumask_lock;
 static struct mutex gov_lock;
 
 /* Hi speed to bump to from lo speed when load burst (default max) */
-static unsigned int hispeed_freq;
+static unsigned int hispeed_freq = 1094400;
 
 /* Go to hi speed when CPU load at or above this value. */
 #define DEFAULT_GO_HISPEED_LOAD 99
@@ -123,7 +123,7 @@ static bool boosted;
 #define DEFAULT_TIMER_SLACK (4 * DEFAULT_TIMER_RATE)
 static int timer_slack_val = DEFAULT_TIMER_SLACK;
 
-static bool io_is_busy = 0;
+static bool io_is_busy = 1;
 
 /*
  * If the max load among other CPUs is higher than up_threshold_any_cpu_load
@@ -132,7 +132,7 @@ static bool io_is_busy = 0;
  * sync_freq
  */
 static unsigned int up_threshold_any_cpu_load;
-static unsigned int sync_freq = 300000;
+static unsigned int sync_freq = 787200;
 static unsigned int up_threshold_any_cpu_freq;
 
 static int cpufreq_governor_interactive(struct cpufreq_policy *policy,

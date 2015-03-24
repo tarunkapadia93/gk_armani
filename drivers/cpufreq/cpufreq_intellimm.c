@@ -51,11 +51,11 @@
 #define DEF_FREQ_DOWN_STEP_BARRIER		(1728000)
 #else
 #define DEF_POWER_SAVE_FREQUENCY		(787200)
-#define DEF_TWO_PHASE_FREQUENCY			(998400)
+#define DEF_TWO_PHASE_FREQUENCY			(1094400)
 #define DBS_INPUT_EVENT_MIN_FREQ		(1094400)
-#define DEF_FREQUENCY_OPTIMAL			(787200)
+#define DEF_FREQUENCY_OPTIMAL			(998400)
 #define DEF_FREQ_DOWN_STEP			(300000)
-#define DEF_FREQ_DOWN_STEP_BARRIER		(600000)
+#define DEF_FREQ_DOWN_STEP_BARRIER		(787200)
 #endif
 
 #define DEF_INPUT_BOOST_DURATION		(6)
@@ -165,9 +165,9 @@ static struct dbs_tuners {
 	.up_threshold_any_cpu_load = DEF_FREQUENCY_UP_THRESHOLD_ANY_CPU,
 	.ignore_nice = 0,
 	.powersave_bias = 0,
-	.optimal_freq_speed = 787200,
+	.optimal_freq_speed = 1094400,
 	.shortcut = 0,
-	.io_is_busy = 0,
+	.io_is_busy = 1,
 	.power_save_freq = DEF_POWER_SAVE_FREQUENCY,
 	.two_phase_freq = DEF_TWO_PHASE_FREQUENCY,
 	.freq_down_step = DEF_FREQ_DOWN_STEP,

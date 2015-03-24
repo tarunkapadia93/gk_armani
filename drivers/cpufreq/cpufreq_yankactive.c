@@ -31,7 +31,7 @@
 #include <asm/cputime.h>
 
 #define DEFAULT_HISPEED_FREQ		1094400
-#define DEFAULT_SYNC_FREQ		300000
+#define DEFAULT_SYNC_FREQ		787200
 #define DEFAULT_UP_THRESHOLD_FREQ	0
 #define DEFAULT_UP_THRESHOLD_LOAD	0
 
@@ -143,7 +143,7 @@ static spinlock_t timer_slack_lock;
 static int *timer_slack_vals = default_timer_slack_val;
 static int ntimer_slack_vals = ARRAY_SIZE(default_timer_slack_val);
 
-static bool io_is_busy = 0;
+static bool io_is_busy = 1;
 
 /*
  * If the max load among other CPUs is higher than up_threshold_any_cpu_load
