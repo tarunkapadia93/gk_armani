@@ -341,6 +341,9 @@ struct root_domain {
 	cpumask_var_t span;
 	cpumask_var_t online;
 
+	/* Indicate more than one runnable task for any CPU */
+	bool overload;
+
 	/*
 	 * The "RT overload" flag: it gets set if a CPU has more than
 	 * one runnable RT task.
@@ -1005,6 +1008,11 @@ static inline void inc_nr_running(struct rq *rq)
 	rq->ave_nr_running = do_avg_nr_running(rq);
 	rq->nr_last_stamp = rq->clock_task;
 	rq->nr_running++;
+
+	if (rq->nr_running >= 2) {
+		if (!rq->rd->overload)
+			rq->rd->overload = true;
+	}
 	write_seqcount_end(&rq->ave_seqcnt);
 }
 
