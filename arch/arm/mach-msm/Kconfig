@@ -3057,4 +3057,10 @@ config XIAOMI_ARMANI_DTB
 	help
 	  Only include Xiaomi Armani specific DTBs to limit the number that
 	  get built during kernel compilation.
+
+config ALUCARD_HOTPLUG
+	bool "Enable alucard-hotplug cpu hotplug driver"
+	default y
+	help
+	  Alucard-hotplug cpu hotplug driver for ARM SOCs
 endif
