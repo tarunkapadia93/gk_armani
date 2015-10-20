@@ -18,6 +18,12 @@
 		status = "ok";
 	};
 
+	qcom,msm-thermal-simple {
+		compatible = "qcom,msm-thermal-simple";
+		qcom,thermal-vadc = <&pm8226_vadc>;
+		qcom,adc-channel = <178>;
+	};
+
 	w1-gpio {
             compatible = "qcom,w1-gpio";
             qcom,gpio-pin = <439>; /* BAT_ID Connects to mpp-8*/
