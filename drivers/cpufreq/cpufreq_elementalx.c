@@ -29,7 +29,7 @@
 #include <linux/slab.h>
 
 #define CREATE_TRACE_POINTS
-#include <trace/events/cpufreq_interactive.h>
+#include <trace/events/cpufreq_elementalx.h>
 
 //gboost
 #include <mach/kgsl.h>
@@ -47,7 +47,7 @@ static int g_count = 0;
 #define MIN_FREQUENCY_UP_THRESHOLD		(11)
 #define MAX_FREQUENCY_UP_THRESHOLD		(100)
 #define MIN_FREQUENCY_DOWN_DIFFERENTIAL		(1)
-#define DBS_INPUT_EVENT_MIN_FREQ		(960000)
+#define DBS_INPUT_EVENT_MIN_FREQ		(787200)
 #define DEF_UI_DYNAMIC_SAMPLING_RATE		(15000)
 #define DBS_UI_SAMPLING_MIN_TIMEOUT		(30)
 #define DBS_UI_SAMPLING_MAX_TIMEOUT		(1000)
@@ -162,8 +162,8 @@ static struct dbs_tuners {
 	.up_threshold_any_cpu_load = DEF_FREQUENCY_UP_THRESHOLD,
 	.ignore_nice = 0,
 	.powersave_bias = 0,
-	.sync_freq = 0,
-	.optimal_freq = 0,
+	.sync_freq = 300000,
+	.optimal_freq = 787200,
 	.two_phase_freq = 0,
 	.ui_sampling_rate = DEF_UI_DYNAMIC_SAMPLING_RATE,
 	.ui_timeout = DBS_UI_SAMPLING_TIMEOUT,
@@ -967,16 +967,16 @@ static void dbs_freq_increase(struct cpufreq_policy *p, unsigned load, unsigned 
 	if (dbs_tuners_ins.powersave_bias)
 		freq = powersave_bias_target(p, freq, CPUFREQ_RELATION_H);
 	else if (p->cur == p->max) {
-		trace_cpufreq_interactive_already (p->cpu, load, p->cur, p->cur, p->cur);
+		trace_cpufreq_elementalx_already (p->cpu, load, p->cur, p->cur, p->cur);
 		return;
 	}
 
-	trace_cpufreq_interactive_target (p->cpu, load, p->cur, p->cur, freq);
+	trace_cpufreq_elementalx_target (p->cpu, load, p->cur, p->cur, freq);
 
 	__cpufreq_driver_target(p, freq, (dbs_tuners_ins.powersave_bias || freq < p->max) ?
 			CPUFREQ_RELATION_L : CPUFREQ_RELATION_H);
 
-	trace_cpufreq_interactive_up (p->cpu, freq, p->cur);
+	trace_cpufreq_elementalx_up (p->cpu, freq, p->cur);
 }
 
 int set_two_phase_freq(int cpufreq)
@@ -991,7 +991,7 @@ void set_two_phase_freq_by_cpu ( int cpu_nr, int cpufreq){
 	two_phase_freq_array[cpu_nr-1] = cpufreq;
 }
 
-int input_event_boosted(void)
+int input_event_boosted_elementalx(void)
 {
 	unsigned long flags;
 
@@ -1251,16 +1251,16 @@ if (dbs_tuners_ins.gboost) {
 		}
 	}
 
-	if (input_event_boosted())
+	if (input_event_boosted_elementalx())
 	{
-		trace_cpufreq_interactive_already (policy->cpu, cur_load, policy->cur, policy->cur, policy->cur);
+		trace_cpufreq_elementalx_already (policy->cpu, cur_load, policy->cur, policy->cur, policy->cur);
 		return;
 	}
 
 	
 	
 	if (policy->cur == policy->min){
-		trace_cpufreq_interactive_already (policy->cpu, cur_load, policy->cur, policy->cur, policy->cur);
+		trace_cpufreq_elementalx_already (policy->cpu, cur_load, policy->cur, policy->cur, policy->cur);
 		return;
 	}
 
@@ -1296,10 +1296,10 @@ if (dbs_tuners_ins.gboost) {
 		if (dbs_tuners_ins.powersave_bias)
 			freq_next = powersave_bias_target(policy, freq_next, CPUFREQ_RELATION_L);
 
-		trace_cpufreq_interactive_target (policy->cpu, cur_load, policy->cur, policy->cur, freq_next);
+		trace_cpufreq_elementalx_target (policy->cpu, cur_load, policy->cur, policy->cur, freq_next);
 		__cpufreq_driver_target(policy, freq_next,
 			CPUFREQ_RELATION_L);
-		trace_cpufreq_interactive_down (policy->cpu, freq_next, policy->cur);
+		trace_cpufreq_elementalx_down (policy->cpu, freq_next, policy->cur);
 	}
 }
 
@@ -1333,7 +1333,7 @@ static void do_dbs_timer(struct work_struct *work)
 				delay -= jiffies % delay;
 		}
 	} else {
-		if (input_event_boosted())
+		if (input_event_boosted_elementalx())
 			goto sched_wait;
 
 		__cpufreq_driver_target(dbs_info->cur_policy,
@@ -1510,7 +1510,7 @@ static struct input_handler dbs_input_handler = {
 	.id_table	= dbs_ids,
 };
 
-int set_input_event_min_freq(int cpufreq)
+int set_input_event_min_freq_elementalx(int cpufreq)
 {
 	int i  = 0;
 	for ( i = 0 ; i < NR_CPUS; i++)
@@ -1518,7 +1518,7 @@ int set_input_event_min_freq(int cpufreq)
 	return 0;
 }
 
-void set_input_event_min_freq_by_cpu ( int cpu_nr, int cpufreq){
+void set_input_event_min_freq_by_cpu_elementalx ( int cpu_nr, int cpufreq){
 	input_event_min_freq_array[cpu_nr-1] = cpufreq;
 }
 static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
@@ -1553,11 +1553,11 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 		this_dbs_info->cpu = cpu;
 		this_dbs_info->rate_mult = 1;
 		elementalx_powersave_bias_init_cpu(cpu);
-		set_two_phase_freq(1267200);
-	        set_input_event_min_freq_by_cpu(1, 1267200);
-        	set_input_event_min_freq_by_cpu(2, 1036000);
-        	set_input_event_min_freq_by_cpu(3, 729000);
-        	set_input_event_min_freq_by_cpu(4, 729000);
+		set_two_phase_freq(1190400);
+	        set_input_event_min_freq_by_cpu_elementalx(1, 998400);
+        	set_input_event_min_freq_by_cpu_elementalx(2, 787200);
+        	set_input_event_min_freq_by_cpu_elementalx(3, 384000);
+        	set_input_event_min_freq_by_cpu_elementalx(4, 300000);
 		if (dbs_enable == 1) {
 			unsigned int latency;
 
@@ -1602,7 +1602,7 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 					NULL,
 					dbs_tuners_ins.powersave_bias))
 			dbs_timer_init(this_dbs_info);
-		trace_cpufreq_interactive_target (cpu, 0, 0, 0, 0);
+		trace_cpufreq_elementalx_target (cpu, 0, 0, 0, 0);
 		break;
 
 	case CPUFREQ_GOV_STOP:
@@ -1619,7 +1619,7 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 			sysfs_remove_group(cpufreq_global_kobject,
 					   &dbs_attr_group);
 		}
-		trace_cpufreq_interactive_target (cpu, 0, 0, 0, 0);
+		trace_cpufreq_elementalx_target (cpu, 0, 0, 0, 0);
 		break;
 
 	case CPUFREQ_GOV_LIMITS:
