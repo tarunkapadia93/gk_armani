@@ -419,14 +419,14 @@ VibeStatus ImmVibeSPI_ForceOut_SetSamples(VibeUInt8 nActuatorIndex, VibeUInt16 n
 
     if(nOutputSignalBitDepth == 8) {
         if( nBufferSizeInBytes != 1) {
-	    pr_info("%s: Only support single sample for ERM\n",__func__);
+	    printk("%s: Only support single sample for ERM\n",__func__);
 	    return VIBE_E_FAIL;
         } else {
 	    level = (signed char)(*pForceOutputBuffer);
 	}
     } else if(nOutputSignalBitDepth == 16) {
         if( nBufferSizeInBytes != 2) {
-	    pr_info("%s: Only support single sample for ERM\n",__func__);
+	    printk("%s: Only support single sample for ERM\n",__func__);
 	    return VIBE_E_FAIL;
         } else {
 	    level = (signed short)(*((signed short*)(pForceOutputBuffer)));
@@ -434,11 +434,11 @@ VibeStatus ImmVibeSPI_ForceOut_SetSamples(VibeUInt8 nActuatorIndex, VibeUInt16 n
 	    level >>= 8;
 	}
     } else {
-	pr_info("%s: Invalid Output Force Bit Depth\n",__func__);
+	printk("%s: Invalid Output Force Bit Depth\n",__func__);
 	return VIBE_E_FAIL;
     }
 
-    pr_debug("%s: level = %d\n", __func__, level);
+    printk("%s: level = %d\n", __func__, level);
 
     isa1000_vib_set_level( level);
 
