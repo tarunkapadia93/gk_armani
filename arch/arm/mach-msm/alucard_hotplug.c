@@ -228,7 +228,7 @@ static void __ref hotplug_work_fn(struct work_struct *work)
 		delay -= jiffies % delay;
 	}
 	
-	queue_delayed_work_on(BOOT_CPU, alucard_hp_wq,
+	queue_delayed_work_on(0, alucard_hp_wq,
 				&alucard_hotplug_work,
 				delay);
 }
@@ -352,8 +352,8 @@ static void hotplug_start(void)
 	if (num_online_cpus() > 1) {
 		delay -= jiffies % delay;
 	}
-	INIT_DEFERRABLE_WORK(&alucard_hotplug_work, hotplug_work_fn);
-	queue_delayed_work_on(BOOT_CPU, alucard_hp_wq,
+	INIT_DELAYED_WORK_DEFERRABLE(&alucard_hotplug_work, hotplug_work_fn);
+	queue_delayed_work_on(0, alucard_hp_wq,
 				&alucard_hotplug_work,
 				delay);
 
