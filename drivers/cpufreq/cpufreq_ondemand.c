@@ -154,8 +154,8 @@ static struct dbs_tuners {
 	.down_differential_multi_core = MICRO_FREQUENCY_DOWN_DIFFERENTIAL,
 	.up_threshold_any_cpu_load = DEF_FREQUENCY_UP_THRESHOLD,
 	.ignore_nice = 0,
-	.powersave_bias = 0,
-	.sync_freq = 0,
+	.powersave_bias = 200,
+	.sync_freq = 300000,
 	.optimal_freq = 0,
 	.input_boost = 0,
 };
