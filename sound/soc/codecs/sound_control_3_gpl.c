@@ -383,7 +383,7 @@ static struct kobj_attribute sound_reg_read_attribute =
 
 static struct kobj_attribute sound_reg_write_attribute =
 	__ATTR(sound_reg_write,
-		0222,
+		0666,
 		NULL,
 		sound_reg_write_store);
 
