@@ -1018,7 +1018,7 @@ static int fb_notifier_callback(struct notifier_block *self,
 	if (evdata && evdata->data && event == FB_EVENT_BLANK &&
 			ft5x06 && ft5x06->dev) {
 		blank = evdata->data;
-		if (*blank == FB_BLANK_UNBLANK) {
+		if (*blank == FB_BLANK_UNBLANK || (*blank == FB_BLANK_VSYNC_SUSPEND)) {
 			if(u_blank) {
 				pr_info("ft5x06 resume!\n");
 				ft5x06_resume(ft5x06);
