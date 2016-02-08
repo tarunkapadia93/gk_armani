@@ -63,6 +63,14 @@
 #include "pm.h"
 #include "modem_notifier.h"
 #include "spm-regulator.h"
+ 
+#ifdef CONFIG_CPU_FREQ_GOV_UBERDEMAND
+int set_second_phase_freq(int cpufreq);
+#endif
+#ifdef CONFIG_CPU_FREQ_GOV_BADASS
+int set_two_phase_freq_badass(int cpufreq);
+int set_three_phase_freq_badass(int cpufreq);
+#endif
 
 static struct memtype_reserve msm8226_reserve_table[] __initdata = {
 	[MEMTYPE_SMI] = {
@@ -222,6 +230,13 @@ void __init msm8226_init(void)
 	msm8226_init_gpiomux();
 	board_dt_populate(adata);
 	msm8226_add_drivers();
+#ifdef CONFIG_CPU_FREQ_GOV_UBERDEMAND
+ 	set_second_phase_freq(CONFIG_CPU_FREQ_GOV_UBERDEMAND_SECOND_PHASE_FREQ);
+#endif
+#ifdef CONFIG_CPU_FREQ_GOV_BADASS
+	set_two_phase_freq_badass(CONFIG_CPU_FREQ_GOV_BADASS_2_PHASE_FREQ);
+	set_three_phase_freq_badass(CONFIG_CPU_FREQ_GOV_BADASS_3_PHASE_FREQ);
+#endif
 }
 
 static const char *msm8226_dt_match[] __initconst = {
