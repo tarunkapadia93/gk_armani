@@ -50,7 +50,7 @@
  * debug = 3 will print suspend/resume and fast lane boost.
  * debug = 4 will print suspend/resume and hotplug work delay for debug.
  */
-static unsigned int debug = 2;
+static unsigned int debug = 0;
 module_param_named(debug_mask, debug, uint, 0644);
 
 /*
