@@ -81,6 +81,7 @@
 		qcom,mdss-dsi-pan-enable-dynamic-fps;
 		qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode";
 		qcom,mdss-dsi-min-refresh-rate = <45>;
+		qcom,ulps-enabled;
 		qcom,mdss-pan-physical-width-dimension = <58>;
 		qcom,mdss-pan-physical-height-dimension = <103>;
 	};
