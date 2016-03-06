@@ -47,7 +47,7 @@ static int g_count = 0;
 #define MIN_FREQUENCY_UP_THRESHOLD		(11)
 #define MAX_FREQUENCY_UP_THRESHOLD		(100)
 #define MIN_FREQUENCY_DOWN_DIFFERENTIAL		(1)
-#define DBS_INPUT_EVENT_MIN_FREQ		(960000)
+#define DBS_INPUT_EVENT_MIN_FREQ		(998400)
 #define DEF_UI_DYNAMIC_SAMPLING_RATE		(15000)
 #define DBS_UI_SAMPLING_MIN_TIMEOUT		(30)
 #define DBS_UI_SAMPLING_MAX_TIMEOUT		(1000)
@@ -162,9 +162,9 @@ static struct dbs_tuners {
 	.up_threshold_any_cpu_load = DEF_FREQUENCY_UP_THRESHOLD,
 	.ignore_nice = 0,
 	.powersave_bias = 0,
-	.sync_freq = 0,
-	.optimal_freq = 0,
-	.two_phase_freq = 0,
+	.sync_freq = 300000,
+	.optimal_freq = 787200,
+	.two_phase_freq = 998400,
 	.ui_sampling_rate = DEF_UI_DYNAMIC_SAMPLING_RATE,
 	.ui_timeout = DBS_UI_SAMPLING_TIMEOUT,
 	.enable_boost_cpu = 1,
