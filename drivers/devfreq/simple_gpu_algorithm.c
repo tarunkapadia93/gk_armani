@@ -26,7 +26,7 @@ module_param_named(simple_ramp_threshold, ramp_up_threshold, int, 0664);
 int simple_gpu_active = 0;
 module_param_named(simple_gpu_activate, simple_gpu_active, int, 0664);
 
-int simple_gpu_debug = 3;
+int simple_gpu_debug = 0;
 module_param_named(simple_gpu_debug, simple_gpu_debug, int, 0664);
 
 static int laziness;
