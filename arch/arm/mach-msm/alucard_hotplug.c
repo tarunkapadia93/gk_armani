@@ -141,31 +141,30 @@ static unsigned int get_nr_run_avg(void)
 }
 
 static unsigned int hotplug_freq[NR_CPUS][2] = {
-	{0, 998400},
-	{384000, 1094400},
-	{600000, 1190400},
+	{0, 1190400},
+	{787200, 1190400},
+	{787200, 1190400},
 	{787200, 0}
 };
 static int hotplug_load[NR_CPUS][2] = {
 	{0, 60},
-	{30, 65},
-	{30, 65},
-	{30, 0}
+	{20, 60},
+	{20, 60},
+	{20, 0}
 };
 static unsigned int hotplug_rq[NR_CPUS][2] = {
 	{0, 100},
-	{100, 200},
-	{200, 300},
-	{300, 0}
+	{100, 150},
+	{150, 150},
+	{150, 0}
 };
 
 static unsigned int hotplug_rate[NR_CPUS][2] = {
-	{1, 1},
-	{4, 2},
-	{4, 2},
-	{4, 1}
+	{0, 1},
+	{1, 2},
+	{2, 2},
+	{2, 0}
 };
-
 static void __ref hotplug_work_fn(struct work_struct *work)
 {
 	int upmaxcoreslimit = 0;
