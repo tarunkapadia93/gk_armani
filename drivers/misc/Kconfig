@@ -672,6 +672,12 @@ config TI_DRV2667
 	  To compile this driver as a module, choose M here: the
 	  module will be called ti_drv2667.
 
+config IMMERSION_HAPTIC
+	tristate "Immersion haptic controller support"
+        depends on I2C
+        help
+	  The driver support immersion haptic controller.
+
 config UID_CPUTIME
 	tristate "Per-UID cpu time statistics"
 	depends on PROFILING
@@ -694,4 +700,5 @@ source "drivers/misc/ti-st/Kconfig"
 source "drivers/misc/lis3lv02d/Kconfig"
 source "drivers/misc/carma/Kconfig"
 source "drivers/misc/altera-stapl/Kconfig"
+source "drivers/misc/tspdrv/Kconfig"
 endmenu

@@ -1335,6 +1335,7 @@ CONFIG_QSEECOM=y
 # CONFIG_QPNP_MISC is not set
 # CONFIG_USB_HSIC_SMSC_HUB is not set
 # CONFIG_TI_DRV2667 is not set
+# CONFIG_IMMERSION_HAPTIC is not set
 CONFIG_UID_CPUTIME=y
 CONFIG_HPH_HIGH_PERF=y
 # CONFIG_C2PORT is not set
@@ -1361,6 +1362,11 @@ CONFIG_HPH_HIGH_PERF=y
 # Altera FPGA firmware download module
 #
 # CONFIG_ALTERA_STAPL is not set
+
+#
+# TouchSense driver support
+#
+# CONFIG_TSPDRV is not set 
 
 #
 # SCSI device support
