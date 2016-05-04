@@ -47,6 +47,7 @@ struct cpufreq_nightmare_cpuinfo {
 	struct cpufreq_policy *cur_policy;
 	bool governor_enabled;
 	unsigned int cpu;
+	unsigned int prev_load;
 	/*
 	 * mutex that serializes governor limit change with
 	 * do_nightmare_timer invocation. We do not want do_nightmare_timer to run
@@ -85,8 +86,8 @@ static struct nightmare_tuners {
 	.inc_cpu_load_at_min_freq = 40,
 	.inc_cpu_load = 60,
 	.dec_cpu_load = 60,
-	.freq_for_responsiveness = 787200,
-	.freq_for_responsiveness_max = 1094400,
+	.freq_for_responsiveness = 998400,
+	.freq_for_responsiveness_max = 1190400,
 	.freq_step_at_min_freq = 40,
 	.freq_step = 50,
 	.freq_up_brake_at_min_freq = 40,
@@ -459,6 +460,7 @@ static void nightmare_check_cpu(struct cpufreq_nightmare_cpuinfo *this_nightmare
 	unsigned int max_load_freq = 0;
 	unsigned int tmp_freq = 0;
 	unsigned int j;
+	unsigned int sampling_rate = nightmare_tuners_ins.sampling_rate;
 
 	policy = this_nightmare_cpuinfo->cur_policy;
 	if (!policy)
@@ -468,7 +470,7 @@ static void nightmare_check_cpu(struct cpufreq_nightmare_cpuinfo *this_nightmare
 		struct cpufreq_nightmare_cpuinfo *j_nightmare_cpuinfo = &per_cpu(od_nightmare_cpuinfo, j);
 		u64 cur_wall_time, cur_idle_time;
 		unsigned int idle_time, wall_time;
-		unsigned int load;
+		unsigned int cur_load;
 		unsigned int load_freq;
 		int freq_avg;
 		
@@ -485,18 +487,59 @@ static void nightmare_check_cpu(struct cpufreq_nightmare_cpuinfo *this_nightmare
 		if (unlikely(!wall_time || wall_time < idle_time))
 			continue;
 
-		load = 100 * (wall_time - idle_time) / wall_time;
+		/*
+		 * If the CPU had gone completely idle, and a task just woke up
+		 * on this CPU now, it would be unfair to calculate 'load' the
+		 * usual way for this elapsed time-window, because it will show
+		 * near-zero load, irrespective of how CPU intensive that task
+		 * actually is. This is undesirable for latency-sensitive bursty
+		 * workloads.
+		 *
+		 * To avoid this, we reuse the 'load' from the previous
+		 * time-window and give this task a chance to start with a
+		 * reasonably high CPU frequency. (However, we shouldn't over-do
+		 * this copy, lest we get stuck at a high load (high frequency)
+		 * for too long, even when the current system load has actually
+		 * dropped down. So we perform the copy only once, upon the
+		 * first wake-up from idle.)
+		 *
+		 * Detecting this situation is easy: the governor's deferrable
+		 * timer would not have fired during CPU-idle periods. Hence
+		 * an unusually large 'wall_time' (as compared to the sampling
+		 * rate) indicates this scenario.
+		 *
+		 * prev_load can be zero in two cases and we must recalculate it
+		 * for both cases:
+		 * - during long idle intervals
+		 * - explicitly set to zero
+		 */
+		if (unlikely(wall_time > (2 * sampling_rate) &&
+			     j_nightmare_cpuinfo->prev_load)) {
+			cur_load = j_nightmare_cpuinfo->prev_load;
+
+			/*
+			 * Perform a destructive copy, to ensure that we copy
+			 * the previous load only once, upon the first wake-up
+			 * from idle.
+			 */
+			j_nightmare_cpuinfo->prev_load = 0;
+		} else {
+			cur_load = 100 * (wall_time - idle_time) / wall_time;
+			j_nightmare_cpuinfo->prev_load = cur_load;
+		}
 
 		freq_avg = __cpufreq_driver_getavg(policy, j);
+		if (policy == NULL)
+			return;
 		if (freq_avg <= 0)
 			freq_avg = policy->cur;
 
-		load_freq = load * freq_avg;
+		load_freq = cur_load * freq_avg;
 		if (load_freq > max_load_freq)
 			max_load_freq = load_freq;
 
-		if (load > max_load)
-			max_load = load;
+		if (cur_load > max_load)
+			max_load = cur_load;
 	}
 
 	cpufreq_notify_utilization(policy, max_load);
@@ -536,6 +579,10 @@ static void do_nightmare_timer(struct work_struct *work)
 		container_of(work, struct cpufreq_nightmare_cpuinfo, work.work);
 	int delay;
 
+	if (unlikely(!cpu_online(this_nightmare_cpuinfo->cpu) ||
+				!this_nightmare_cpuinfo->cur_policy))
+		return;
+
 	mutex_lock(&this_nightmare_cpuinfo->timer_mutex);
 
 	nightmare_check_cpu(this_nightmare_cpuinfo);
@@ -564,7 +611,7 @@ static int cpufreq_governor_nightmare(struct cpufreq_policy *policy,
 
 	switch (event) {
 	case CPUFREQ_GOV_START:
-		if (!policy)
+		if ((!cpu_online(cpu)) || (!policy))
 			return -EINVAL;
 
 		mutex_lock(&nightmare_mutex);
@@ -576,9 +623,16 @@ static int cpufreq_governor_nightmare(struct cpufreq_policy *policy,
 
 		for_each_cpu(j, policy->cpus) {
 			struct cpufreq_nightmare_cpuinfo *j_nightmare_cpuinfo = &per_cpu(od_nightmare_cpuinfo, j);
+			unsigned int prev_load;
 
 			j_nightmare_cpuinfo->prev_cpu_idle = get_cpu_idle_time(j,
 				&j_nightmare_cpuinfo->prev_cpu_wall, 0);
+
+			prev_load = (unsigned int)
+				(j_nightmare_cpuinfo->prev_cpu_wall -
+				j_nightmare_cpuinfo->prev_cpu_idle);
+			j_nightmare_cpuinfo->prev_load = 100 * prev_load /
+				(unsigned int) j_nightmare_cpuinfo->prev_cpu_wall;
 		}
 
 		nightmare_enable++;
@@ -595,6 +649,7 @@ static int cpufreq_governor_nightmare(struct cpufreq_policy *policy,
 				return rc;
 			}
 		}
+		cpu = policy->cpu;
 		this_nightmare_cpuinfo->cpu = cpu;
 		this_nightmare_cpuinfo->cur_policy = policy;
 		this_nightmare_cpuinfo->governor_enabled = true;
